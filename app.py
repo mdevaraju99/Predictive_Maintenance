@@ -9,7 +9,7 @@ import io
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import classification_report, confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from imblearn.over_sampling import SMOTE
 import matplotlib.pyplot as plt
 
@@ -123,15 +123,19 @@ if uploaded_files:
 
     st.success("Model Trained & Saved Successfully!")
 
-    # ---------------- Evaluation --------------------
+    # ---------------- Evaluation (Confusion Matrix Only) --------------------
     y_pred = rf.predict(X_test_s)
 
-    #st.subheader("📊 Evaluation Metrics")
-    #st.text(classification_report(y_test, y_pred, target_names=le.classes_))
-
     cm = confusion_matrix(y_test, y_pred)
-    fig, ax = plt.subplots()
-    ConfusionMatrixDisplay(cm, display_labels=le.classes_).plot(ax=ax)
+
+    fig, ax = plt.subplots(figsize=(6, 5))
+    disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=le.classes_)
+    disp.plot(ax=ax, cmap="viridis", values_format="d")
+
+    ax.set_title("Confusion Matrix - Random Forest Fault Classification", fontsize=12)
+    ax.set_xlabel("Predicted label")
+    ax.set_ylabel("True label")
+
     st.pyplot(fig)
 
     # ---------------- Prediction Simulation --------------------
@@ -168,4 +172,3 @@ if uploaded_files:
     st.line_chart(forecast_df.set_index("Day")[["Machines Predicted Failure"]])
 
     st.download_button("📥 Download Merged Data", data=open("merged_data.csv","rb"), file_name="merged_data.csv")
-
