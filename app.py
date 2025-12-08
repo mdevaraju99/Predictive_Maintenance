@@ -126,8 +126,8 @@ if uploaded_files:
     # ---------------- Evaluation --------------------
     y_pred = rf.predict(X_test_s)
 
-    st.subheader("📊 Evaluation Metrics")
-    st.text(classification_report(y_test, y_pred, target_names=le.classes_))
+    #st.subheader("📊 Evaluation Metrics")
+    #st.text(classification_report(y_test, y_pred, target_names=le.classes_))
 
     cm = confusion_matrix(y_test, y_pred)
     fig, ax = plt.subplots()
@@ -168,3 +168,4 @@ if uploaded_files:
     st.line_chart(forecast_df.set_index("Day")[["Machines Predicted Failure"]])
 
     st.download_button("📥 Download Merged Data", data=open("merged_data.csv","rb"), file_name="merged_data.csv")
+
