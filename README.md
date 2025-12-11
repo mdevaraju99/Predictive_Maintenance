@@ -41,6 +41,9 @@ Use Monte-Carlo Simulation to model sensor drift and future uncertainty to estim
 | Warning | 17 |
 | Failure | 6 |
 
+<img width="1750" height="522" alt="image" src="https://github.com/user-attachments/assets/f99cee4c-de76-4211-83f2-747c22ee38d9" />
+
+
 A significant class imbalance was present and addressed using SMOTE oversampling.
 
 ---
