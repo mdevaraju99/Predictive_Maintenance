@@ -78,6 +78,5 @@ Overall Accuracy: **95.83%**
 
 Insert confusion matrix image:
 
-```md
 <img width="447" height="289" alt="image" src="https://github.com/user-attachments/assets/4bf8ac99-a430-4ad0-b6d2-865922b8737e" />
 
