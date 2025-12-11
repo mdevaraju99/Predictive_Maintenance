@@ -79,7 +79,24 @@ Overall Accuracy: **95.83%**
 
 ## Confusion Matrix
 
-Insert confusion matrix image:
+
 
 <img width="447" height="289" alt="image" src="https://github.com/user-attachments/assets/4bf8ac99-a430-4ad0-b6d2-865922b8737e" />
+
+---
+## Machine-Level 10-Day Failure Forecast
+
+<img width="1779" height="787" alt="Screenshot 2025-12-11 120929" src="https://github.com/user-attachments/assets/b8c7ed0a-5f8d-4cf3-8cf3-01fe9f93ee94" />
+Here we can forecast the machine failures for each 10 days
+
+---
+##  10-Day Failure Risk Summary
+
+<img width="1726" height="605" alt="image" src="https://github.com/user-attachments/assets/b445ee2e-ace0-4a12-9425-55bfef4d86ba" />
+
+Here's the Graphical representation of 10-Day Failure Risk Summary
+
+<img width="1764" height="449" alt="Screenshot 2025-12-11 121447" src="https://github.com/user-attachments/assets/4d07de06-9431-428a-8374-c62ba25e9600" />
+
+
 
