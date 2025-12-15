@@ -124,41 +124,29 @@ if uploaded_files:
 
     st.success("Model Trained & Saved Successfully!")
 
-    # ---------------- Compact Confusion Matrix (PNG displayed with fixed width) --------------------
+    # ---------------- Compact Confusion Matrix --------------------
     st.subheader("📉 Confusion Matrix (Compact)")
 
     y_pred = rf.predict(X_test_s)
     cm = confusion_matrix(y_test, y_pred)
     labels = le.classes_
 
-    # Draw small heatmap to buffer (fixed pixel width when displayed)
-    fig, ax = plt.subplots(figsize=(2.0, 2.0))            # small figure
+    fig, ax = plt.subplots(figsize=(2.0, 2.0))
     sns.heatmap(
-        cm,
-        annot=True,
-        fmt="d",
-        cmap="Blues",                                    # clean professional palette
-        cbar=False,
-        xticklabels=labels,
-        yticklabels=labels,
+        cm, annot=True, fmt="d", cmap="Blues", cbar=False,
+        xticklabels=labels, yticklabels=labels,
         annot_kws={"size": 8, "weight": "bold"},
-        square=True,
-        linewidths=0.5,
-        linecolor="white"
+        square=True, linewidths=0.5, linecolor="white"
     )
-
     ax.set_xlabel("Predicted", fontsize=9)
     ax.set_ylabel("Actual", fontsize=9)
-    ax.tick_params(axis="x", labelsize=9, rotation=0)
-    ax.tick_params(axis="y", labelsize=9, rotation=0)
     plt.tight_layout(pad=0.2)
 
-    # Save to PNG in-memory and display with fixed width so Streamlit won't expand it
     buf = io.BytesIO()
     fig.savefig(buf, format="png", dpi=150, bbox_inches="tight", pad_inches=0.05)
     plt.close(fig)
     buf.seek(0)
-    st.image(buf.getvalue(), width=250)   # fixed width in px — adjust if you want smaller
+    st.image(buf.getvalue(), width=250)
 
     # ---------------- Machine Level Forecast --------------------
     st.subheader("🚨 Machine-Level 10-Day Failure Forecast")
@@ -174,21 +162,36 @@ if uploaded_files:
     results = []
     machine_ids = [f"Machine_{i+1}" for i in range(NUM_MACHINES)]
 
-    for d in range(1, DAYS + 1):
-        for m_id in machine_ids:
+    # NEW FIXED FAILURE-LOCKING LOGIC
+    for m_id in machine_ids:
+        has_failed = False
+        for d in range(1, DAYS + 1):
+
+            if has_failed:
+                results.append({
+                    "Machine_ID": m_id,
+                    "Day": d,
+                    "Predicted_Status": "failure",
+                    "Failure_Probability": 1.0
+                })
+                continue
+
             base = base_rows[np.random.randint(0, len(base_rows))]
             noisy = base + np.random.normal(0, [0.02, 0.005, 0.002, 0.005])
             scaled = scaler.transform(noisy.reshape(1, -1))
 
             pred_num = rf.predict(scaled)[0]
             pred_label = le.inverse_transform([pred_num])[0]
-            prob_failure = rf.predict_proba(scaled)[0][failure_idx] if failure_idx is not None else 0
+            prob_failure = rf.predict_proba(scaled)[0][failure_idx] if failure_idx is not None else 0.0
+
+            if pred_label == "failure":
+                has_failed = True
 
             results.append({
                 "Machine_ID": m_id,
                 "Day": d,
-                "Predicted_Status": pred_label,
-                "Failure_Probability": round(float(prob_failure), 4)
+                "Predicted_Status": "failure" if has_failed else pred_label,
+                "Failure_Probability": 1.0 if has_failed else round(float(prob_failure), 4)
             })
 
     forecast_df = pd.DataFrame(results)
@@ -203,21 +206,18 @@ if uploaded_files:
     warning = day_df[day_df["Predicted_Status"] == "warning"]
     normal = day_df[day_df["Predicted_Status"] == "normal"]
 
-    # ---- Machines Predicted to Fail ----
     st.subheader("🛑 Machines Predicted to FAIL")
     if len(failed) > 0:
         st.dataframe(failed[["Machine_ID", "Failure_Probability"]])
     else:
         st.info("No Failures detected.")
 
-    # ---- Warning Machines ----
     st.subheader("⚠️ Warning Machines")
     if len(warning) > 0:
         st.dataframe(warning[["Machine_ID", "Failure_Probability"]])
     else:
         st.info("No machines in WARNING state.")
 
-    # ---- Normal Machines ----
     st.subheader("✅ Normal Machines")
     if len(normal) > 0:
         st.dataframe(normal[["Machine_ID"]])
@@ -228,42 +228,36 @@ if uploaded_files:
     st.subheader("📊 10-Day Failure Risk Summary")
 
     summary_rows = []
-    for d in range(1, DAYS+1):
+    for d in range(1, DAYS + 1):
         ddf = forecast_df[forecast_df["Day"] == d]
+        fail_count = int(len(ddf[ddf["Predicted_Status"] == "failure"]))
+        mean_prob = round(float(ddf["Failure_Probability"].mean()), 4)
         summary_rows.append({
             "Day": d,
-            "Machines Predicted Failure": int(len(ddf[ddf["Predicted_Status"] == "failure"])),
-            "Mean Failure Probability": float(round(ddf["Failure_Probability"].mean(), 4))
+            "Machines_Predicted_Failure": fail_count,
+            "Mean_Failure_Probability": mean_prob
         })
 
     summary_df = pd.DataFrame(summary_rows)
     st.dataframe(summary_df)
 
-    # Altair bar chart (valid scheme)
+    # BAR CHART – RED WHEN FAILURE OCCURS
     chart = alt.Chart(summary_df).mark_bar().encode(
         x=alt.X("Day:O", title="Day"),
-        y=alt.Y("Machines Predicted Failure:Q", title="Machines Predicted Failure"),
-        color=alt.Color("Mean Failure Probability:Q", scale=alt.Scale(scheme="redyellowgreen")),
-        tooltip=["Day:O", "Machines Predicted Failure:Q", alt.Tooltip("Mean Failure Probability:Q", format=".4f")]
+        y=alt.Y("Machines_Predicted_Failure:Q", title="Machines Predicted Failure"),
+        color=alt.condition(
+            alt.datum.Machines_Predicted_Failure > 0,
+            alt.value("red"),
+            alt.value("#bdbdbd")
+        ),
+        tooltip=[
+            "Day:O",
+            "Machines_Predicted_Failure:Q",
+            alt.Tooltip("Mean_Failure_Probability:Q", format=".4f")
+        ]
     ).properties(width=700, height=320, title="10-Day Failure Risk Overview")
 
     st.altair_chart(chart, use_container_width=True)
-
-    # ---------------- Simulate Live Playback (optional) --------------------
-    sim = st.checkbox("Simulate live playback (animate 10 days)")
-    if sim:
-        placeholder = st.empty()
-        for i in range(1, DAYS + 1):
-            sub = summary_df[summary_df["Day"] <= i]
-            ani = alt.Chart(sub).mark_bar().encode(
-                x=alt.X("Day:O", title="Day"),
-                y=alt.Y("Machines Predicted Failure:Q", title="Machines Predicted Failure"),
-                color=alt.Color("Mean Failure Probability:Q", scale=alt.Scale(scheme="redyellowgreen")),
-                tooltip=["Day:O", "Machines Predicted Failure:Q", alt.Tooltip("Mean Failure Probability:Q", format=".4f")]
-            ).properties(width=700, height=320, title=f"Day 1 → {i}")
-            placeholder.altair_chart(ani, use_container_width=True)
-            time.sleep(0.35)
-        placeholder.altair_chart(chart, use_container_width=True)
 
     # ---------------- Downloads --------------------
     st.download_button(
