@@ -80,8 +80,7 @@ Overall Accuracy: **95.83%**
 ## Confusion Matrix
 
 
-
-<img width="447" height="289" alt="image" src="https://github.com/user-attachments/assets/4bf8ac99-a430-4ad0-b6d2-865922b8737e" />
+<img width="812" height="521" alt="image" src="https://github.com/user-attachments/assets/925d4718-823f-4909-b45a-5c07359ac5cf" />
 
 ---
 
