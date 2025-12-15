@@ -84,10 +84,13 @@ Overall Accuracy: **95.83%**
 <img width="447" height="289" alt="image" src="https://github.com/user-attachments/assets/4bf8ac99-a430-4ad0-b6d2-865922b8737e" />
 
 ---
+
+### First Usecase where machines are getting repaired and working normally from next day
 ## Machine-Level 10-Day Failure Forecast
 
-<img width="1779" height="787" alt="Screenshot 2025-12-11 120929" src="https://github.com/user-attachments/assets/b8c7ed0a-5f8d-4cf3-8cf3-01fe9f93ee94" />
-Here we can forecast the machine failures for each 10 days
+<img width="1888" height="849" alt="image" src="https://github.com/user-attachments/assets/ac2f171b-2a0a-4a1d-8a4d-72f29c1ed10e" />
+
+Here we can see the machine failures and reason for failures,then how we can repair that on that day.
 
 ---
 ##  10-Day Failure Risk Summary
