@@ -95,11 +95,14 @@ Here we can see the machine failures and reason for failures,then how we can rep
 ---
 ##  10-Day Failure Risk Summary
 
-<img width="1726" height="605" alt="image" src="https://github.com/user-attachments/assets/b445ee2e-ace0-4a12-9425-55bfef4d86ba" />
+<img width="1785" height="714" alt="image" src="https://github.com/user-attachments/assets/d2ec3784-c877-4c46-98fb-78557afcc7c2" />
 
-Here's the Graphical representation of 10-Day Failure Risk Summary
 
-<img width="1764" height="449" alt="Screenshot 2025-12-11 121447" src="https://github.com/user-attachments/assets/4d07de06-9431-428a-8374-c62ba25e9600" />
+---
 
+### Second Usecase where failed machines are not considering for next forecasting 
+## Machine-Level 10-Day Failure Forecast
+
+<img width="1833" height="830" alt="image" src="https://github.com/user-attachments/assets/a2e5f43c-5f9c-4a21-b0b3-ae0d3e4bf99a" />
 
 
